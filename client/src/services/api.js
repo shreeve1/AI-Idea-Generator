@@ -136,6 +136,11 @@ class ApiService {
     async healthCheck() {
         return this.request('/health');
     }
+
+    // Categories methods
+    async getCategories() {
+        return this.request('/categories');
+    }
 }
 
 // Create and export a singleton instance
