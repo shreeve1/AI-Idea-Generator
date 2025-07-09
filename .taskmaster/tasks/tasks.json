@@ -1,0 +1,396 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Backend Project Setup and Server Initialization",
+        "description": "Set up the foundational backend infrastructure using Node.js and Express. This includes initializing the project, setting up the server, defining the application structure, and establishing environment variable management for sensitive data like API keys and database credentials.",
+        "details": "Initialize a Node.js project with `npm init`. Install Express.js for the server framework. Create a directory structure like `/src`, `/src/api`, `/src/config`, `/src/services`. Implement a basic Express server in `index.js` that listens on a port defined in a `.env` file. Use a library like `dotenv` to manage environment variables. Set up basic middleware for JSON parsing (`express.json()`) and CORS.",
+        "testStrategy": "Unit test the server initialization to ensure it starts without errors. Create a health check endpoint (e.g., `/health`) and write an integration test to verify it returns a 200 OK status, confirming the server is running correctly.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Initialize Node.js Project and Install Dependencies",
+            "description": "Create a new Node.js project and install the core dependencies required for the server: Express for the web framework, dotenv for environment variable management, and cors for handling cross-origin requests.",
+            "dependencies": [],
+            "details": "In your project's root directory, run `npm init -y` to generate a `package.json` file. Then, execute `npm install express dotenv cors` to add the necessary packages to your project.\n<info added on 2025-07-09T02:06:48.286Z>\nProject initialization and dependency installation completed:\n- package.json created via npm init -y\n- Installed express (^5.1.0), dotenv (^17.1.0), cors (^2.8.5)\n- Dependencies verified in package.json\n- node_modules directory with 71 packages installed\n- No installation vulnerabilities detected\n\nReady for directory structure creation.\n</info added on 2025-07-09T02:06:48.286Z>",
+            "status": "done",
+            "testStrategy": "Verify that a `package.json` file and a `node_modules` directory are created. Check the `dependencies` section in `package.json` to confirm that `express`, `dotenv`, and `cors` are listed with their respective versions."
+          },
+          {
+            "id": 2,
+            "title": "Establish Core Application Directory Structure",
+            "description": "Create a standardized folder structure to organize the application's code. This separation of concerns is crucial for maintainability and scalability.",
+            "dependencies": [],
+            "details": "Create a main `src` directory at the project root. Inside `src`, create the following subdirectories: `api` for housing route definitions and controllers, `config` for application configuration files, and `services` for business logic.\n<info added on 2025-07-09T02:07:39.737Z>\n✅ Created main src/ directory in project root  \n✅ Created src/api/ directory for route definitions and controllers  \n✅ Created src/config/ directory for application configuration files  \n✅ Created src/services/ directory for business logic  \n\nVerified directory structure with tree command:  \n└───src  \n    ├───api  \n    ├───config  \n    └───services  \n\nStandardized folder structure in place for organizing application code with proper separation of concerns, supporting maintainability and scalability.\n</info added on 2025-07-09T02:07:39.737Z>",
+            "status": "done",
+            "testStrategy": "Manually inspect the project's file system to confirm the existence and correct hierarchy of the `src/`, `src/api/`, `src/config/`, and `src/services/` directories."
+          },
+          {
+            "id": 3,
+            "title": "Implement Environment Variable Management",
+            "description": "Set up the mechanism for loading environment variables from a `.env` file. This is essential for managing sensitive data and configuration settings outside of the source code.",
+            "dependencies": [
+              2
+            ],
+            "details": "Create a `.env` file in the project root and add the key-value pair `PORT=8080`. Create a `.gitignore` file in the root and add `.env` and `node_modules/` to it. This prevents committing sensitive information and dependencies to version control.",
+            "status": "done",
+            "testStrategy": "Create a temporary test script (e.g., `test-env.js`) that includes `require('dotenv').config()` and `console.log(process.env.PORT)`. Run `node test-env.js` and verify that `8080` is printed to the console."
+          },
+          {
+            "id": 4,
+            "title": "Create Basic Express Server Entry Point",
+            "description": "Develop the main server file that initializes the Express application and starts it, making it listen for incoming requests on the port specified in the environment variables.",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Create an `index.js` file inside the `src` directory. In this file, require `express` and `dotenv`. Configure dotenv by calling `require('dotenv').config()`. Create an Express app instance (`const app = express();`). Define the port using `const PORT = process.env.PORT || 3001;`. Start the server with `app.listen(PORT, () => console.log(`Server running on port ${PORT}`));`.",
+            "status": "done",
+            "testStrategy": "Run the application using `node src/index.js`. Verify that the console output shows the message 'Server running on port 8080' (or the port defined in your `.env` file)."
+          },
+          {
+            "id": 5,
+            "title": "Integrate Core Middleware and a Health Check Route",
+            "description": "Add essential middleware for JSON parsing and CORS to the Express application. Create a simple health check endpoint to confirm that the server is running and responsive to HTTP requests.",
+            "dependencies": [],
+            "details": "In `src/index.js`, require the `cors` package. Before the `app.listen()` call, add the middleware: `app.use(cors());` and `app.use(express.json());`. Then, add a basic GET route: `app.get('/api/health', (req, res) => { res.status(200).json({ status: 'UP' }); });`.",
+            "status": "done",
+            "testStrategy": "With the server running, use a tool like cURL or Postman to send a GET request to `http://localhost:8080/api/health`. Verify that the response has a 200 status code and the JSON body is `{\"status\":\"UP\"}`."
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Database Schema Implementation (PostgreSQL)",
+        "description": "Design and implement the database schema for Users, Ideas, and Categories using PostgreSQL. This includes creating tables, defining columns, relationships, and constraints as specified in the PRD.",
+        "details": "Use a PostgreSQL client or an ORM like Sequelize/Prisma. Define the `User` model with `user_id`, `email`, `password_hash`, `created_at`. Define the `Category` model with `category_id`, `category_name`, `description`, `ai_prompt_context`. Define the `Idea` model with `idea_id`, `user_id` (foreign key to User, nullable), `prompt_text`, `generated_content`, `categories` (JSONB or array), `created_at`, `is_saved`. Seed the `Category` table with the seven predefined categories.",
+        "testStrategy": "Validate the schema by running migration scripts and inspecting the database structure. Write unit tests for the models to ensure data types and constraints are correctly applied. Test foreign key relationships by attempting to create an Idea linked to a non-existent User.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define User Model Schema",
+            "description": "Create the User entity with fields like `user_id`, `email`, and `password_hash`.",
+            "dependencies": [],
+            "details": "Design the 'users' table with columns: id (PK, serial), email (varchar, unique, not null), password_hash (varchar, not null), created_at (timestamp with time zone, default now()).",
+            "status": "done",
+            "testStrategy": "Verify the table is created with the correct columns and constraints in the database."
+          },
+          {
+            "id": 2,
+            "title": "Define Category Model Schema",
+            "description": "Create the Category entity with fields like `category_id`, `category_name`, and `description`.",
+            "dependencies": [],
+            "details": "Design the 'categories' table with columns: id (PK, serial), name (varchar, unique, not null), description (text), created_at (timestamp with time zone, default now()).",
+            "status": "done",
+            "testStrategy": "Verify the table is created with the correct columns and constraints in the database."
+          },
+          {
+            "id": 3,
+            "title": "Define Idea Model Schema",
+            "description": "Create the Idea entity with fields like `idea_id`, `title`, `description`, `user_id`, and `category_id`.",
+            "dependencies": [],
+            "details": "Design the 'ideas' table with columns: id (PK, serial), title (varchar, not null), description (text, not null), user_id (bigint, FK to users), category_id (bigint, FK to categories), created_at (timestamp with time zone, default now()).",
+            "status": "done",
+            "testStrategy": "Verify the table is created with the correct columns and foreign key relationships."
+          },
+          {
+            "id": 4,
+            "title": "Establish Relationships and Constraints",
+            "description": "Set up foreign key relationships between Users, Categories, and Ideas tables.",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "Create foreign key constraints: ideas.user_id -> users.id (CASCADE delete), ideas.category_id -> categories.id (RESTRICT delete). Add indexes for performance on foreign key columns.",
+            "status": "done",
+            "testStrategy": "Verify foreign key constraints are properly created and enforce referential integrity."
+          },
+          {
+            "id": 5,
+            "title": "Seed Initial Category Data",
+            "description": "Populate the Categories table with initial data for common idea categories.",
+            "dependencies": [
+              2
+            ],
+            "details": "Insert seed data for categories like Technology, Business, Education, Health & Wellness, Environment, Social Impact, Entertainment, Travel & Lifestyle, Food & Beverage, and Other.",
+            "status": "done",
+            "testStrategy": "Verify that the categories table contains the seeded data and can be queried successfully."
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "User Authentication Service with JWT",
+        "description": "Develop a secure user authentication system with endpoints for registration, login, and session management using JSON Web Tokens (JWT). This includes password hashing and email verification logic.",
+        "details": "Create API endpoints: `POST /api/auth/register` and `POST /api/auth/login`. Use the `bcrypt` library to hash passwords before storing them in the `User` table. Upon successful login, generate a JWT containing the `user_id` and sign it with a secret key. Implement middleware to protect routes by verifying the JWT from the `Authorization` header. For email verification, generate a unique token upon registration, send it in an email link (using a service like SendGrid), and create an endpoint to verify the token.",
+        "testStrategy": "Unit test the password hashing and comparison functions. Write integration tests for the `/register` and `/login` endpoints to check for correct status codes, token generation, and error handling (e.g., duplicate email, incorrect password). Test the authentication middleware by making requests to a protected endpoint with valid, invalid, and missing tokens.",
+        "priority": "high",
+        "dependencies": [
+          1,
+          2
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Password Hashing Implementation",
+            "description": "Implement secure password hashing using bcrypt to protect user passwords before storage.",
+            "dependencies": [],
+            "details": "- Choose bcrypt library (e.g., bcryptjs or bcrypt)\n- Create utility functions for hashing and comparing passwords\n- Configure salt rounds via environment variable\n- Write unit tests to verify hashing and comparison behavior",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "User Registration Endpoint",
+            "description": "Develop the /register endpoint to accept new user data, hash the password, store user in database, and send verification email.",
+            "dependencies": [
+              1
+            ],
+            "details": "- Define request schema and validation (email, password, name)\n- Invoke hashing utility from subtask 1\n- Persist user record with `isVerified=false`\n- Integrate email service to send verification link/token\n- Write integration tests for successful and failed registration",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Email Verification Flow",
+            "description": "Create the email verification endpoint to validate the token and activate the user account.",
+            "dependencies": [
+              2
+            ],
+            "details": "- Generate verification tokens (e.g., JWT or UUID) and store or embed in user record\n- Develop /verify-email endpoint to accept token from query or body\n- Validate token and update user's `isVerified` field to true\n- Handle expired or invalid tokens with appropriate responses\n- Write tests for token validation and user activation",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Login Endpoint with JWT Generation",
+            "description": "Implement the /login endpoint to authenticate users, verify password and email status, and return a JWT.",
+            "dependencies": [
+              1,
+              3
+            ],
+            "details": "- Validate incoming credentials (email and password)\n- Fetch user and check `isVerified` status\n- Use bcrypt compare function from subtask 1\n- Generate access token (JWT) with proper claims and expiration\n- Write tests for login success, wrong credentials, and unverified email",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Authentication Middleware Implementation",
+            "description": "Develop middleware to protect routes by validating JWTs and attaching user context to requests.",
+            "dependencies": [
+              4
+            ],
+            "details": "- Create Express middleware to read Authorization header\n- Verify JWT signature and expiration\n- Fetch user information based on token payload\n- Attach user object to request for downstream handlers\n- Write unit and integration tests for protected and unprotected scenarios",
+            "status": "done",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "AI Integration Service for ChatGPT",
+        "description": "Create a dedicated service layer to manage all interactions with the OpenAI ChatGPT API. This service will handle prompt construction, API calls, response parsing, and error handling.",
+        "details": "Create a service module, e.g., `aiService.js`. Use the official `openai` Node.js library. The service should expose a function like `generateIdeas(prompt, categories)`. This function will construct a detailed prompt for the API by combining the user's `prompt` with the `ai_prompt_context` from the selected `categories`. Implement API key management using environment variables. Add logic for rate limiting, request timeouts, and parsing the `generated_content` from the API response. Implement robust error handling for API failures.",
+        "testStrategy": "Unit test the prompt construction logic to ensure it correctly merges user input and category contexts. Mock the OpenAI API client to test the service's response parsing and error handling logic without making actual API calls. Conduct a limited number of integration tests with the real API to validate end-to-end connectivity.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Prompt Construction",
+            "description": "Design and implement a flexible prompt builder for the AI integration, allowing dynamic content insertion and template management.",
+            "dependencies": [],
+            "details": "Define prompt templates, handle variable interpolation, ensure context preservation, and manage localization if needed.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "API Call Implementation",
+            "description": "Develop the module to perform authenticated requests to the external AI API, including request formatting and network communication.",
+            "dependencies": [
+              1
+            ],
+            "details": "Set up HTTP client, configure headers and authentication, serialize request payloads, and integrate with the prompt builder output.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Response Parsing",
+            "description": "Create logic to process and validate responses from the AI API, extracting relevant data and handling variations in the response format.",
+            "dependencies": [
+              2
+            ],
+            "details": "Parse JSON responses, map fields to internal data structures, validate schema completeness, and handle optional or nested fields.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Error Handling with Rate Limiting and Timeout",
+            "description": "Implement robust error handling for API errors, rate limit breaches, and request timeouts, ensuring reliable retries and backoff strategies.",
+            "dependencies": [
+              2
+            ],
+            "details": "Detect HTTP errors, implement exponential backoff and retry policies, enforce request timeouts, handle circuit breaker logic, and log failures.",
+            "status": "done",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Frontend Application Setup with React",
+        "description": "Set up the frontend project using React. This includes initializing the application with Create React App or Vite, configuring routing, and establishing a basic component structure and state management solution.",
+        "details": "Initialize a new React project using Vite for faster development (`npm create vite@latest my-app -- --template react`). Install and configure `react-router-dom` for client-side routing. Set up a basic folder structure: `/src/components`, `/src/pages`, `/src/services`, `/src/hooks`. Define main pages like `HomePage`, `LoginPage`, `RegisterPage`, and `DashboardPage`. Choose a state management library like Redux Toolkit or Zustand for managing global state such as user authentication status and generated ideas.",
+        "testStrategy": "Verify that the React application compiles and runs without errors. Test the routing by creating simple components for each route and navigating between them. Ensure the basic layout component renders correctly. Write simple component tests using a library like React Testing Library to check that key components render.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 6,
+        "title": "Category Filtering System (API and UI)",
+        "description": "Develop the backend API and frontend UI for the category-based filtering system. This allows users to select from the seven predefined categories to influence idea generation.",
+        "details": "Backend: Create a REST endpoint `GET /api/categories` that fetches all categories from the database. Frontend: Create a `CategorySelector` component in React that fetches data from this endpoint on mount. The component should display the categories with icons and labels, allowing for multiple selections. Manage the selected categories in the component's state and pass them up to the parent component responsible for idea generation.",
+        "testStrategy": "Backend: Test the `/api/categories` endpoint to ensure it returns the correct list of categories with a 200 status. Frontend: Use React Testing Library to test the `CategorySelector` component. Verify it renders categories correctly and that user clicks update the selection state as expected. Conduct an end-to-end test to ensure the frontend successfully fetches and displays categories from the backend.",
+        "priority": "medium",
+        "dependencies": [
+          1,
+          2,
+          5
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Category Filter API Endpoint",
+            "description": "Develop a backend API endpoint to fetch and filter categories and ideas by category.",
+            "dependencies": [],
+            "details": "Implement a RESTful GET endpoint at /api/categories and /api/ideas?category=<id>. Validate query parameters, query the database for categories and filtered ideas, implement pagination, error handling, and write unit tests for route logic.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Develop Frontend Category Selector Component",
+            "description": "Build a reusable UI component that allows users to view and select one or multiple categories.",
+            "dependencies": [
+              1
+            ],
+            "details": "Use React (or chosen framework) to create a dropdown or checklist component. Fetch categories from /api/categories, manage loading and error states, update local state on selection change, and expose selected categories via props or context. Include unit tests for UI interaction and state management.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Integrate Category Filter into Idea Generation Flow",
+            "description": "Connect the category selector and API filter endpoint within the idea generation workflow.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Modify the idea generation service to accept category filters in its API calls, update the idea list component to pass selected category IDs to /api/ideas?category=<ids>, handle re-rendering on selection change, ensure loading and error states are properly managed, and write end-to-end tests covering the full flow.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Guest Mode Idea Generation Flow",
+        "description": "Implement the core idea generation flow for guest users. This includes the UI for prompt input, category selection, and displaying the AI-generated ideas without requiring registration.",
+        "details": "Create a new API endpoint, e.g., `POST /api/ideas/generate`, that is publicly accessible. This endpoint will take a prompt and categories, call the `aiService` (Task 4), and return the generated ideas. On the frontend, create a main page component that includes a text input for the prompt, the `CategorySelector` component (Task 6), and a submit button. On submission, call the backend endpoint. Implement loading states and display the 3-5 generated ideas in a clean, readable format upon success.",
+        "testStrategy": "Backend: Integration test the `/api/ideas/generate` endpoint to ensure it correctly interacts with the AI service and returns a formatted response. Frontend: E2E test the entire guest user flow: user enters a prompt, selects categories, clicks generate, sees a loading indicator, and then sees the generated ideas. Mock the API response in component tests to validate UI states (loading, success, error).",
+        "priority": "high",
+        "dependencies": [
+          4,
+          5,
+          6
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create public guest mode API endpoint",
+            "description": "Design and implement a RESTful API endpoint that allows guest users to submit idea generation requests.",
+            "dependencies": [],
+            "details": "Define route and HTTP method, specify request and response schemas, implement controller logic for idea generation, configure guest authentication/authorization, write unit tests.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Implement frontend prompt input UI",
+            "description": "Build the input form component that lets guest users enter creative prompts.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create a prompt input form with a textarea, add input validation, style the component, and set up an API service call to the guest endpoint.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Integrate category selection component",
+            "description": "Add a dropdown or multi-select control to let guest users choose idea categories.",
+            "dependencies": [
+              2
+            ],
+            "details": "Fetch category list from the API, implement a selection UI component, manage selection state, and pass category data to the prompt input component.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Develop result display with loading states",
+            "description": "Implement the UI component to display generated ideas, including visual feedback during loading.",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "Add a loading spinner or skeleton view, call the API on form submission, handle loading and error states, render the resulting ideas list, and apply styling.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Frontend User Registration and Login Integration",
+        "description": "Integrate the frontend with the authentication service. This involves creating registration and login forms, handling user input, making API calls, and managing JWTs on the client-side.",
+        "details": "Create `RegisterPage` and `LoginPage` components in React. Each will contain a form with fields for email and password. On form submission, use a service like `axios` to call the `/api/auth/register` or `/api/auth/login` endpoints. Upon successful login, store the received JWT in `localStorage` or a secure cookie. Update the global application state (e.g., Redux/Zustand store) to reflect the user's authenticated status. Implement logic to attach the JWT to the `Authorization` header for all subsequent authenticated API requests.",
+        "testStrategy": "Component test the forms for validation and submission logic. E2E test the full registration and login flows. Verify that a successful login redirects the user to the dashboard and that the JWT is stored correctly. Test that attempting to access a protected route without logging in redirects the user to the login page.",
+        "priority": "medium",
+        "dependencies": [
+          3,
+          5
+        ],
+        "status": "pending",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-07-09T01:34:15.980Z",
+      "updated": "2025-07-09T04:31:08.622Z",
+      "description": "Tasks for master context"
+    }
+  }
+}
