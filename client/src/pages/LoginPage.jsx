@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import useAuthStore from '../hooks/useAuthStore';
 
 const LoginPage = () => {
@@ -49,50 +49,82 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="w3-container w3-padding-32">
-      <h3 className="w3-border-bottom w3-border-light-grey w3-padding-16">Login</h3>
-      
-      {error && (
-        <div className="w3-panel w3-red w3-round">
-          <p>{error}</p>
+    <div className="page-content">
+      <section className="section">
+        <div className="container">
+          <div className="grid" style={{ gridTemplateColumns: '1fr min(500px, 100%) 1fr' }}>
+            <div></div>
+            <div className="auth-form-container">
+              <div className="text-center mb-lg">
+                <h1>Welcome Back</h1>
+                <p className="text-secondary">Sign in to your account</p>
+              </div>
+              
+              {error && (
+                <div className="error-message mb-md">
+                  <p>{error}</p>
+                </div>
+              )}
+              
+              <form onSubmit={handleSubmit} className="auth-form">
+                <div className="form-group">
+                  <label className="form-label">Email Address</label>
+                  <input 
+                    className="form-input" 
+                    type="email" 
+                    placeholder="Enter your email" 
+                    required 
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    disabled={isLoading}
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label className="form-label">Password</label>
+                  <input 
+                    className="form-input" 
+                    type="password" 
+                    placeholder="Enter your password" 
+                    required 
+                    name="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    disabled={isLoading}
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <button 
+                    className={`btn btn-primary btn-block btn-large ${isLoading ? 'loading' : ''}`}
+                    type="submit"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Signing In...' : 'Sign In'}
+                  </button>
+                </div>
+              </form>
+              
+              <div className="auth-links">
+                <div className="text-center mb-md">
+                  <Link to="/request-password-reset" className="text-accent">
+                    Forgot Password?
+                  </Link>
+                </div>
+                
+                <div className="text-center">
+                  <span className="text-secondary">Don't have an account? </span>
+                  <Link to="/register" className="text-accent">
+                    Sign Up
+                  </Link>
+                </div>
+              </div>
+            </div>
+            <div></div>
+          </div>
         </div>
-      )}
-      
-      <form onSubmit={handleSubmit}>
-        <p>
-          <input 
-            className="w3-input w3-border" 
-            type="email" 
-            placeholder="Email" 
-            required 
-            name="email"
-            value={formData.email}
-            onChange={handleInputChange}
-            disabled={isLoading}
-          />
-        </p>
-        <p>
-          <input 
-            className="w3-input w3-border" 
-            type="password" 
-            placeholder="Password" 
-            required 
-            name="password"
-            value={formData.password}
-            onChange={handleInputChange}
-            disabled={isLoading}
-          />
-        </p>
-        <p>
-          <button 
-            className="w3-button w3-black" 
-            type="submit"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Logging in...' : 'Login'}
-          </button>
-        </p>
-      </form>
+      </section>
     </div>
   );
 };

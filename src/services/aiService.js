@@ -184,9 +184,13 @@ Please generate ${maxIdeas} ideas based on this request:`;
                 throw new Error('No content in API response');
             }
 
+            // Parse the text content into structured ideas
+            const ideas = this.parseIdeasFromText(content);
+
             return {
                 success: true,
-                generated_content: content,
+                ideas: ideas,  // Return structured ideas array
+                generated_content: content,  // Keep raw content for debugging
                 metadata: {
                     model: response.model,
                     usage: response.usage,
@@ -200,10 +204,110 @@ Please generate ${maxIdeas} ideas based on this request:`;
                     response_id: response.id
                 }
             };
+        } catch (error) {
+            throw new Error(`Failed to parse AI response: ${error.message}`);
+        }
+    }
+
+    /**
+     * Parse ideas from OpenAI text response into structured format
+     * @param {string} text - Raw text from OpenAI
+     * @returns {Array} - Array of structured idea objects
+     */
+    parseIdeasFromText(text) {
+        const ideas = [];
+        
+        try {
+            // Split text into lines and process
+            const lines = text.split('\n').filter(line => line.trim());
+            
+            let currentIdea = null;
+            
+            for (const line of lines) {
+                const cleanLine = line.trim();
+                
+                // Skip empty lines
+                if (!cleanLine) continue;
+                
+                // Check if this is a new idea (starts with number or bullet)
+                const ideaMatch = cleanLine.match(/^(\d+[\.\)]|\*|\-|\•)\s*(.+)/);
+                
+                if (ideaMatch) {
+                    // Save previous idea if exists
+                    if (currentIdea) {
+                        ideas.push(currentIdea);
+                    }
+                    
+                    // Start new idea
+                    const titleText = ideaMatch[2].trim();
+                    const titleMatch = titleText.match(/^([^:]+):\s*(.+)/);
+                    
+                    if (titleMatch) {
+                        // Title and description separated by colon
+                        currentIdea = {
+                            title: titleMatch[1].trim(),
+                            description: titleMatch[2].trim()
+                        };
+                    } else {
+                        // Just title, description might follow
+                        currentIdea = {
+                            title: titleText,
+                            description: ''
+                        };
+                    }
+                } else if (currentIdea && cleanLine) {
+                    // This is likely a continuation of the description
+                    if (currentIdea.description) {
+                        currentIdea.description += ' ' + cleanLine;
+                    } else {
+                        currentIdea.description = cleanLine;
+                    }
+                }
+            }
+            
+            // Add the last idea
+            if (currentIdea) {
+                ideas.push(currentIdea);
+            }
+            
+            // If no structured ideas found, try to create some from the text
+            if (ideas.length === 0) {
+                // Fallback: split by double newlines or major separators
+                const sections = text.split(/\n\s*\n|\n\d+\.|^\d+\./).filter(s => s.trim());
+                
+                sections.forEach((section, index) => {
+                    const trimmed = section.trim();
+                    if (trimmed) {
+                        const lines = trimmed.split('\n').filter(l => l.trim());
+                        const title = lines[0]?.trim() || `Idea ${index + 1}`;
+                        const description = lines.slice(1).join(' ').trim() || trimmed;
+                        
+                        ideas.push({
+                            title: title.replace(/^[\d\.\-\*\•]+\s*/, ''),
+                            description: description
+                        });
+                    }
+                });
+            }
+            
+            // Final fallback: create single idea with full text
+            if (ideas.length === 0) {
+                ideas.push({
+                    title: 'Generated Ideas',
+                    description: text.trim()
+                });
+            }
             
         } catch (error) {
-            throw new Error(`Failed to parse API response: ${error.message}`);
+            console.error('Error parsing ideas from text:', error);
+            // Fallback to single idea with raw text
+            ideas.push({
+                title: 'Generated Ideas',
+                description: text.trim()
+            });
         }
+        
+        return ideas;
     }
 
     /**

@@ -7,27 +7,24 @@ import DashboardPage from './pages/DashboardPage';
 import Header from './components/Header';
 import useAuthStore from './hooks/useAuthStore';
 
+import RequestPasswordResetPage from './pages/RequestPasswordResetPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
+
 function App() {
-  const initialize = useAuthStore((state) => state.initialize);
-
-  useEffect(() => {
-    // Initialize auth state on app start
-    initialize();
-  }, [initialize]);
-
-  return (
-    <Router>
-      <Header />
-      <div className="w3-content w3-padding" style={{ maxWidth: '1564px' }}>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
-        </Routes>
-      </div>
-    </Router>
-  );
+    return (
+        <Router>
+            <Header />
+            <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/request-password-reset" element={<RequestPasswordResetPage />} />
+                <Route path="/reset-password" element={<ResetPasswordPage />} />
+            </Routes>
+        </Router>
+    );
 }
+
 
 export default App;

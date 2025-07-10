@@ -276,7 +276,7 @@
           2,
           5
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -284,7 +284,7 @@
             "description": "Develop a backend API endpoint to fetch and filter categories and ideas by category.",
             "dependencies": [],
             "details": "Implement a RESTful GET endpoint at /api/categories and /api/ideas?category=<id>. Validate query parameters, query the database for categories and filtered ideas, implement pagination, error handling, and write unit tests for route logic.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -295,7 +295,7 @@
               1
             ],
             "details": "Use React (or chosen framework) to create a dropdown or checklist component. Fetch categories from /api/categories, manage loading and error states, update local state on selection change, and expose selected categories via props or context. Include unit tests for UI interaction and state management.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -307,7 +307,7 @@
               2
             ],
             "details": "Modify the idea generation service to accept category filters in its API calls, update the idea list component to pass selected category IDs to /api/ideas?category=<ids>, handle re-rendering on selection change, ensure loading and error states are properly managed, and write end-to-end tests covering the full flow.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           }
         ]
@@ -324,7 +324,7 @@
           5,
           6
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -332,7 +332,7 @@
             "description": "Design and implement a RESTful API endpoint that allows guest users to submit idea generation requests.",
             "dependencies": [],
             "details": "Define route and HTTP method, specify request and response schemas, implement controller logic for idea generation, configure guest authentication/authorization, write unit tests.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -343,7 +343,7 @@
               1
             ],
             "details": "Create a prompt input form with a textarea, add input validation, style the component, and set up an API service call to the guest endpoint.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -354,7 +354,7 @@
               2
             ],
             "details": "Fetch category list from the API, implement a selection UI component, manage selection state, and pass category data to the prompt input component.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -367,7 +367,7 @@
               3
             ],
             "details": "Add a loading spinner or skeleton view, call the API on form submission, handle loading and error states, render the resulting ideas list, and apply styling.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           }
         ]
@@ -383,13 +383,13 @@
           3,
           5
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": []
       }
     ],
     "metadata": {
       "created": "2025-07-09T01:34:15.980Z",
-      "updated": "2025-07-09T04:31:08.622Z",
+      "updated": "2025-07-09T19:58:47.370Z",
       "description": "Tasks for master context"
     }
   }

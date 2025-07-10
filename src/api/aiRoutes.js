@@ -5,6 +5,62 @@ const databaseService = require('../services/database');
 const { authenticateUser } = require('../services/authMiddleware');
 
 /**
+ * POST /api/ai/generate-ideas-guest
+ * Generate ideas for guest users (no authentication required)
+ */
+router.post('/generate-ideas-guest', async (req, res) => {
+    try {
+        const { prompt, categoryIds = [], options = {} } = req.body;
+        
+        // Validate input
+        if (!prompt || typeof prompt !== 'string' || prompt.trim().length === 0) {
+            return res.status(400).json({
+                error: 'Prompt is required and must be a non-empty string'
+            });
+        }
+        
+        if (prompt.length > 1000) {
+            return res.status(400).json({
+                error: 'Prompt must be less than 1000 characters'
+            });
+        }
+        
+        // Fetch categories if provided
+        let categories = [];
+        if (categoryIds.length > 0) {
+            try {
+                categories = await databaseService.getCategoriesByIds(categoryIds);
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+                return res.status(400).json({
+                    error: 'Invalid category IDs provided'
+                });
+            }
+        }
+        
+        // Generate ideas using AI service
+        const result = await aiService.generateIdeas(prompt, categories, options);
+        
+        // Log the generation for analytics (without user ID)
+        console.log(`Guest ideas generated: ${prompt.substring(0, 50)}...`);
+        
+        res.json({
+            success: true,
+            data: result,
+            prompt: prompt,
+            categories: categories.map(cat => ({ id: cat.id, name: cat.name })),
+            guest: true
+        });
+        
+    } catch (error) {
+        console.error('Guest AI generation error:', error);
+        res.status(500).json({
+            error: error.message || 'Failed to generate ideas'
+        });
+    }
+});
+
+/**
  * POST /api/ai/generate-ideas
  * Generate ideas using AI based on user prompt and categories
  */
