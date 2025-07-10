@@ -30,7 +30,7 @@ class JWTService {
 
 			const token = jwt.sign(sanitizedPayload, this.secret, {
 				expiresIn: this.expiresIn,
-				issuer: 'idea-tracker-app',
+				issuer: 'ai-idea-generator-app',
 				subject: 'user-authentication'
 			});
 
@@ -59,7 +59,7 @@ class JWTService {
 
 			const token = jwt.sign(verificationPayload, this.secret, {
 				expiresIn: '24h', // Verification tokens expire in 24 hours
-				issuer: 'idea-tracker-app',
+				issuer: 'ai-idea-generator-app',
 				subject: 'email-verification'
 			});
 
@@ -81,7 +81,7 @@ class JWTService {
 			}
 
 			const decoded = jwt.verify(token, this.secret, {
-				issuer: 'idea-tracker-app'
+				issuer: 'ai-idea-generator-app'
 			});
 
 			return decoded;

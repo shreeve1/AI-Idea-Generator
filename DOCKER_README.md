@@ -1,6 +1,6 @@
-# Docker Deployment Guide for Idea Tracker Application
+# Docker Deployment Guide for AI Idea Generator Application
 
-This guide explains how to deploy the Idea Tracker application using Docker and Docker Compose.
+This guide explains how to deploy the AI Idea Generator application using Docker and Docker Compose.
 
 ## Prerequisites
 
@@ -13,7 +13,7 @@ This guide explains how to deploy the Idea Tracker application using Docker and 
 1. **Clone the repository**
    ```bash
    git clone <your-repo-url>
-   cd app2
+   cd ai-idea-generator
    ```
 
 2. **Setup environment variables**
@@ -87,13 +87,13 @@ docker-compose run --service-ports app-dev
 
 ```bash
 # Build the Docker image
-docker build -t idea-tracker .
+docker build -t ai-idea-generator .
 
 # Run the container
-docker run -p 3001:3001 --env-file .env idea-tracker
+docker run -p 3001:3001 --env-file .env ai-idea-generator
 
 # Run with custom port
-docker run -p 8080:3001 --env-file .env idea-tracker
+docker run -p 8080:3001 --env-file .env ai-idea-generator
 ```
 
 ## Architecture

@@ -1,4 +1,4 @@
-# Multi-stage Dockerfile for Idea Tracker Application
+# Multi-stage Dockerfile for AI Idea Generator Application
 
 # Stage 1: Build the React frontend
 FROM node:20-alpine AS frontend-builder

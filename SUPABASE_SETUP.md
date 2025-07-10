@@ -7,7 +7,7 @@ This project uses Supabase as the backend database and authentication provider.
 1. Go to [https://supabase.com](https://supabase.com) and sign up/sign in
 2. Click "New Project"
 3. Fill in your project details:
-   - **Name**: `idea-tracker` (or your preferred name)
+   - **Name**: `ai-idea-generator` (or your preferred name)
    - **Database Password**: Choose a strong password
    - **Region**: Select the region closest to you
 4. Wait for the project to be created (this takes a few minutes)
