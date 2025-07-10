@@ -1,24 +1,24 @@
 # Multi-stage Dockerfile for Idea Tracker Application
 
 # Stage 1: Build the React frontend
-FROM node:18-alpine AS frontend-builder
+FROM node:20-alpine AS frontend-builder
 
 WORKDIR /app/client
 
 # Copy package files
 COPY client/package*.json ./
 
-# Install dependencies (including dev dependencies for build)
-RUN npm ci
-
 # Copy frontend source code
 COPY client/ .
 
-# Build the React app
-RUN npm run build
+# Clear npm cache and reinstall dependencies to fix Rollup native issues
+RUN npm cache clean --force && \
+    rm -rf node_modules package-lock.json && \
+    npm install && \
+    npm run build
 
 # Stage 2: Setup the Node.js backend
-FROM node:18-alpine AS backend-builder
+FROM node:20-alpine AS backend-builder
 
 WORKDIR /app
 
@@ -32,7 +32,7 @@ RUN npm ci --only=production
 COPY src/ ./src/
 
 # Stage 3: Final production image
-FROM node:18-alpine AS production
+FROM node:20-alpine AS production
 
 # Install dumb-init for proper signal handling
 RUN apk add --no-cache dumb-init
