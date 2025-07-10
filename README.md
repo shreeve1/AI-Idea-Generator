@@ -40,6 +40,24 @@ A sophisticated AI-powered idea generator built with modern architecture portfol
 - OpenAI API key
 - Supabase account
 
+### Docker Deployment
+
+1. **Setup environment variables**
+   ```bash
+   cp docker.env.template .env
+   # Edit .env with your configuration
+   ```
+
+2. **Build and run with Docker Compose**
+   ```bash
+   docker-compose up --build -d
+   ```
+
+3. **Access the application**
+   - Open your browser to `http://localhost:3001`
+
+For detailed Docker instructions, see `DOCKER_README.md`.
+
 ### Local Development
 
 1. **Clone the repository**
@@ -75,24 +93,6 @@ A sophisticated AI-powered idea generator built with modern architecture portfol
    # Start frontend (runs on port 5173)
    cd client && npm run dev
    ```
-
-### Docker Deployment
-
-1. **Setup environment variables**
-   ```bash
-   cp docker.env.template .env
-   # Edit .env with your configuration
-   ```
-
-2. **Build and run with Docker Compose**
-   ```bash
-   docker-compose up --build -d
-   ```
-
-3. **Access the application**
-   - Open your browser to `http://localhost:3001`
-
-For detailed Docker instructions, see `DOCKER_README.md`.
 
 ## 🔧 Configuration
 
