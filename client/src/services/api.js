@@ -1,4 +1,18 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+// Auto-detect the correct API base URL based on current host
+const getApiBaseUrl = () => {
+  const currentHost = window.location.hostname;
+  const currentPort = window.location.port;
+  
+  // If accessing via IP address or custom host, use that host for API
+  if (currentHost !== 'localhost' && currentHost !== '127.0.0.1') {
+    return `http://${currentHost}:3001/api`;
+  }
+  
+  // Default to localhost for local development
+  return import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 class ApiService {
     constructor() {
@@ -50,7 +64,14 @@ class ApiService {
                 } catch {
                     errorData = { message: errorText || `HTTP ${response.status}` };
                 }
-                throw new Error(errorData.message || `Request failed with status ${response.status}`);
+                
+                // Handle detailed validation errors
+                if (errorData.details && Array.isArray(errorData.details)) {
+                    const detailedMessage = errorData.details.join('. ');
+                    throw new Error(`${errorData.error || 'Validation Error'}: ${detailedMessage}`);
+                }
+                
+                throw new Error(errorData.error || errorData.message || `Request failed with status ${response.status}`);
             }
 
             // Handle empty responses
@@ -105,6 +126,13 @@ class ApiService {
     // AI methods
     async generateIdeas(prompt, categoryIds = [], options = {}) {
         return this.request('/ai/generate-ideas', {
+            method: 'POST',
+            body: JSON.stringify({ prompt, categoryIds, options }),
+        });
+    }
+
+    async generateIdeasGuest(prompt, categoryIds = [], options = {}) {
+        return this.request('/ai/generate-ideas-guest', {
             method: 'POST',
             body: JSON.stringify({ prompt, categoryIds, options }),
         });

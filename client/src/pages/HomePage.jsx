@@ -3,182 +3,273 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import useAuthStore from '../hooks/useAuthStore';
 import apiService from '../services/api';
+import CategorySelector from '../components/CategorySelector';
 
 const HomePage = () => {
   const { isAuthenticated } = useAuthStore();
-  const [categories, setCategories] = useState([]);
   const [ideaPrompt, setIdeaPrompt] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategories, setSelectedCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
-  // Fetch categories on component mount
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const categoriesData = await apiService.getCategories();
-        setCategories(categoriesData);
-      } catch (error) {
-        console.error('Failed to fetch categories:', error);
-      }
-    };
-
-    fetchCategories();
-  }, []);
+  const [generatedIdeas, setGeneratedIdeas] = useState([]);
+  const [showResults, setShowResults] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleQuickGenerate = async () => {
+    console.log('🚀 HomePage: Starting idea generation...');
+    console.log('📝 HomePage: Prompt:', ideaPrompt);
+    console.log('🏷️ HomePage: Selected categories:', selectedCategories);
+    
     if (!ideaPrompt.trim()) {
-      alert('Please enter an idea prompt');
-      return;
-    }
-
-    if (!isAuthenticated) {
-      alert('Please login to generate ideas');
+      console.log('❌ HomePage: No prompt provided');
+      setError('Please enter an idea prompt');
       return;
     }
 
     setIsLoading(true);
+    setError(null);
+    
     try {
-      const categoryIds = selectedCategory ? [parseInt(selectedCategory)] : [];
-      const result = await apiService.generateIdeas(ideaPrompt, categoryIds);
+      let result;
       
-      // Show a simple success message and redirect to dashboard
-      alert('Ideas generated successfully! Redirecting to dashboard...');
-      window.location.href = '/dashboard';
+      if (isAuthenticated) {
+        console.log('🔐 HomePage: Using authenticated endpoint');
+        result = await apiService.generateIdeas(ideaPrompt, selectedCategories);
+        alert('Ideas generated successfully! Redirecting to dashboard...');
+        window.location.href = '/dashboard';
+        return;
+      } else {
+        console.log('👤 HomePage: Using guest endpoint');
+        result = await apiService.generateIdeasGuest(ideaPrompt, selectedCategories);
+        console.log('✅ HomePage: API response received:', result);
+      }
+      
+      const ideas = result.data?.ideas || result.ideas || [];
+      console.log('💡 HomePage: Parsed ideas:', ideas);
+      
+      setGeneratedIdeas(ideas);
+      setShowResults(true);
+      setIdeaPrompt('');
+      
     } catch (error) {
-      console.error('Failed to generate ideas:', error);
-      alert('Failed to generate ideas. Please try again.');
+      console.error('❌ HomePage: Failed to generate ideas:', error);
+      setError(error.message || 'Failed to generate ideas. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleCategoryChange = (categoryIds) => {
+    setSelectedCategories(categoryIds);
+  };
+
+  const handleTryAgain = () => {
+    setShowResults(false);
+    setGeneratedIdeas([]);
+    setError(null);
+  };
+
   return (
-    <div className="w3-container w3-padding-32">
-      <h1 className="w3-border-bottom w3-border-light-grey w3-padding-16">Idea Tracker</h1>
-      <p>Your AI-powered idea generation and management platform</p>
-
-      <div className="w3-display-container w3-margin-bottom">
-        <div className="w3-container w3-blue w3-padding-32 w3-center">
-          <h2 className="w3-text-white">Generate Ideas with AI</h2>
-          <p className="w3-text-white w3-large">
-            Harness the power of artificial intelligence to generate creative ideas for your projects
-          </p>
-          {isAuthenticated ? (
-            <Link to="/dashboard" className="w3-button w3-white w3-large">
-              Go to Dashboard
-            </Link>
-          ) : (
-            <div>
-              <Link to="/register" className="w3-button w3-white w3-large w3-margin-right">
-                Get Started
-              </Link>
-              <Link to="/login" className="w3-button w3-border w3-text-white w3-large">
-                Login
-              </Link>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Quick Idea Generator Section */}
-      <div className="w3-container w3-padding-32 w3-light-grey">
-        <h3 className="w3-center">Quick Idea Generator</h3>
-        <p className="w3-center w3-text-grey">Try our AI idea generator right from the homepage!</p>
-        
-        <div className="w3-row-padding w3-center">
-          <div className="w3-col m8 l6 w3-margin-auto">
-            <div className="w3-container w3-white w3-padding-32 w3-card">
-              <div className="w3-margin-bottom">
-                <label className="w3-text-grey">What kind of ideas are you looking for?</label>
-                <input
-                  type="text"
-                  className="w3-input w3-border w3-margin-top"
-                  placeholder="e.g., innovative mobile app concepts, sustainable business ideas..."
-                  value={ideaPrompt}
-                  onChange={(e) => setIdeaPrompt(e.target.value)}
-                />
-              </div>
-              
-              <div className="w3-margin-bottom">
-                <label className="w3-text-grey">Category (optional)</label>
-                <select
-                  className="w3-select w3-border w3-margin-top"
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                >
-                  <option value="">All Categories</option>
-                  {categories.map((category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              
-              <button
-                className={`w3-button w3-blue w3-large w3-block ${isLoading ? 'w3-disabled' : ''}`}
-                onClick={handleQuickGenerate}
-                disabled={isLoading}
-              >
-                {isLoading ? 'Generating Ideas...' : 'Generate Ideas'}
-              </button>
-              
-              {!isAuthenticated && (
-                <p className="w3-text-red w3-small w3-margin-top">
-                  Please <Link to="/login" className="w3-text-blue">login</Link> to generate ideas
-                </p>
+    <div className="page-content">
+      {/* Hero Section */}
+      <section className="hero">
+        <div className="hero-background"></div>
+        <div className="container">
+          <div className="grid">
+            <div className="hero-content fade-in-up">
+              <h1>AI-Powered Idea Generation</h1>
+              <p className="mb-lg">
+                Harness the power of artificial intelligence to generate creative ideas for your projects. 
+                Transform your concepts into architectural blueprints for success.
+              </p>
+              {isAuthenticated ? (
+                <Link to="/dashboard" className="btn btn-primary btn-large">
+                  Access Dashboard
+                </Link>
+              ) : (
+                <div className="hero-actions">
+                  <Link to="/register" className="btn btn-primary btn-large">
+                    Get Started
+                  </Link>
+                  <Link to="/login" className="btn btn-large">
+                    Sign In
+                  </Link>
+                </div>
               )}
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="w3-container w3-padding-32" id="features">
-        <h3 className="w3-border-bottom w3-border-light-grey w3-padding-16">Features</h3>
-      </div>
+      {/* Idea Generator Section */}
+      <section className="section surface">
+        <div className="container">
+          <div className="text-center mb-xl">
+            <h2>
+              {isAuthenticated ? 'Quick Idea Generator' : 'Experience AI Innovation'}
+            </h2>
+            <p className="text-secondary">
+              {isAuthenticated 
+                ? 'Generate ideas that will be automatically saved to your dashboard' 
+                : 'Discover what our AI can create for you - sign up to save and manage your ideas'
+              }
+            </p>
+          </div>
 
-      <div className="w3-row-padding">
-        <div className="w3-col l3 m6 w3-margin-bottom">
-          <div className="w3-card">
-            <div className="w3-container w3-padding">
-              <h3>AI Generation</h3>
-              <p className="w3-opacity">
-                Use advanced AI to generate creative ideas based on your prompts and categories.
-              </p>
+          <div className="grid" style={{ gridTemplateColumns: '1fr min(800px, 100%) 1fr' }}>
+            <div></div>
+            <div className="generator-container">
+              {error && (
+                <div className="error-message mb-md">
+                  <p>{error}</p>
+                </div>
+              )}
+
+              {!showResults ? (
+                <div className="card">
+                  <div className="card-content">
+                    {/* Category Selection */}
+                    <div className="form-group">
+                      <label className="form-label">Select Categories</label>
+                      <CategorySelector
+                        selectedCategories={selectedCategories}
+                        onSelectionChange={handleCategoryChange}
+                        multiSelect={true}
+                        disabled={isLoading}
+                      />
+                    </div>
+
+                    {/* Prompt Input */}
+                    <div className="form-group">
+                      <label className="form-label">Describe Your Vision</label>
+                      <textarea
+                        className="form-textarea"
+                        placeholder="e.g., innovative mobile app concepts, sustainable business ideas, creative writing prompts..."
+                        value={ideaPrompt}
+                        onChange={(e) => setIdeaPrompt(e.target.value)}
+                        rows="4"
+                        disabled={isLoading}
+                      />
+                    </div>
+                    
+                    <button
+                      className={`btn btn-primary btn-block btn-large ${isLoading ? 'loading' : ''}`}
+                      onClick={handleQuickGenerate}
+                      disabled={isLoading || !ideaPrompt.trim()}
+                    >
+                      {isLoading ? 'Generating Ideas...' : 'Generate Ideas with AI'}
+                    </button>
+                    
+                    {!isAuthenticated && (
+                      <div className="success-message mt-md">
+                        <p className="caption">
+                          <strong>Guest Mode Active:</strong> Ideas will be displayed but not saved. 
+                          <Link to="/register" className="text-accent"> Create an account</Link> to save and manage your ideas.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                /* Results Display */
+                <div className="results-container">
+                  <div className="text-center mb-lg">
+                    <h3>Generated Ideas</h3>
+                    <p className="text-secondary">AI-crafted concepts tailored to your vision</p>
+                  </div>
+                  
+                  {generatedIdeas.length > 0 ? (
+                    <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 'var(--spacing-md)' }}>
+                      {generatedIdeas.map((idea, index) => (
+                        <div key={index} className="card card-portfolio">
+                          <div className="card-content">
+                            <h4 className="card-title text-accent">{idea.title}</h4>
+                            <p className="card-description">{idea.description}</p>
+                            {idea.categories_used && idea.categories_used.length > 0 && (
+                              <div className="mt-sm">
+                                <div className="caption text-muted">
+                                  Categories: {idea.categories_used.join(', ')}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center">
+                      <p className="text-muted">No ideas were generated. Please try again.</p>
+                    </div>
+                  )}
+
+                  <div className="text-center mt-lg">
+                    <button 
+                      className="btn btn-primary"
+                      onClick={handleTryAgain}
+                    >
+                      Generate More Ideas
+                    </button>
+                    
+                    {!isAuthenticated && (
+                      <Link to="/register" className="btn ml-md">
+                        Sign Up to Save Ideas
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+            <div></div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="section">
+        <div className="container">
+          <div className="text-center mb-xl">
+            <h2>Platform Features</h2>
+            <p className="text-secondary">Comprehensive tools for idea generation and management</p>
+          </div>
+
+          <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
+            <div className="card mb-md">
+              <div className="card-content">
+                <h4 className="text-accent">AI Generation</h4>
+                <p className="card-description">
+                  Advanced artificial intelligence generates creative ideas based on your prompts and selected categories.
+                </p>
+              </div>
+            </div>
+            
+            <div className="card mb-md">
+              <div className="card-content">
+                <h4 className="text-accent">Smart Organization</h4>
+                <p className="card-description">
+                  Organize and categorize your ideas efficiently with our intelligent dashboard management system.
+                </p>
+              </div>
+            </div>
+            
+            <div className="card mb-md">
+              <div className="card-content">
+                <h4 className="text-accent">Collaboration</h4>
+                <p className="card-description">
+                  Share and collaborate on ideas with team members while tracking progress and iterations.
+                </p>
+              </div>
+            </div>
+            
+            <div className="card mb-md">
+              <div className="card-content">
+                <h4 className="text-accent">Enterprise Security</h4>
+                <p className="card-description">
+                  Your ideas are protected with JWT authentication and enterprise-grade encrypted data storage.
+                </p>
+              </div>
             </div>
           </div>
         </div>
-        <div className="w3-col l3 m6 w3-margin-bottom">
-          <div className="w3-card">
-            <div className="w3-container w3-padding">
-              <h3>Organization</h3>
-              <p className="w3-opacity">
-                Organize your ideas into categories and manage them efficiently in your dashboard.
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className="w3-col l3 m6 w3-margin-bottom">
-          <div className="w3-card">
-            <div className="w3-container w3-padding">
-              <h3>Collaboration</h3>
-              <p className="w3-opacity">
-                Share and collaborate on ideas with your team members and track progress.
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className="w3-col l3 m6 w3-margin-bottom">
-          <div className="w3-card">
-            <div className="w3-container w3-padding">
-              <h3>Security</h3>
-              <p className="w3-opacity">
-                Your ideas are secure with JWT authentication and encrypted data storage.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+      </section>
     </div>
   );
 };

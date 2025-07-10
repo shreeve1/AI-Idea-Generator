@@ -61,6 +61,53 @@ app.get('/api/db-test', async (req, res) => {
 	}
 });
 
-app.listen(PORT, () => {
+app.get('/api/debug/env', (req, res) => {
+    res.json({
+        supabaseUrlExists: !!process.env.SUPABASE_URL,
+        supabaseUrlLength: process.env.SUPABASE_URL ? process.env.SUPABASE_URL.length : 0,
+        supabaseUrlPrefix: process.env.SUPABASE_URL ? process.env.SUPABASE_URL.substring(0, 20) + '...' : 'missing',
+        supabaseKeyExists: !!process.env.SUPABASE_ANON_KEY,
+        supabaseKeyLength: process.env.SUPABASE_ANON_KEY ? process.env.SUPABASE_ANON_KEY.length : 0,
+        nodeEnv: process.env.NODE_ENV || 'development'
+    });
+});
+
+app.get('/api/debug/supabase', async (req, res) => {
+    try {
+        const { supabase } = require('./config/supabase');
+        
+        // Test basic connection
+        const { data, error } = await supabase
+            .from('categories')
+            .select('count')
+            .limit(1);
+            
+        if (error) {
+            return res.status(500).json({
+                success: false,
+                error: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code
+            });
+        }
+        
+        res.json({
+            success: true,
+            message: 'Supabase connection successful',
+            data
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message,
+            stack: error.stack
+        });
+    }
+});
+
+app.listen(PORT, '0.0.0.0', () => {
 	console.log(`Server running on port ${PORT}`);
+	console.log(`Local access: http://localhost:${PORT}`);
+	console.log(`Network access: http://[YOUR-IP]:${PORT}`);
 }); 

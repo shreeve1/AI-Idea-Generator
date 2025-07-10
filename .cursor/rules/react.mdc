@@ -3,6 +3,8 @@ alwaysApply: true
 ---
 This comprehensive guide outlines best practices, conventions, and standards for development with modern web technologies including ReactJS, NextJS, Redux, TypeScript, JavaScript, HTML, CSS, and UI frameworks.
 
+Make sure to run all commands in Powershell.
+
     Development Philosophy
     - Write clean, maintainable, and scalable code
     - Follow SOLID principles

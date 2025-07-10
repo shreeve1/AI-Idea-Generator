@@ -1,10 +1,20 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import useAuthStore from '../hooks/useAuthStore';
 
 const Header = () => {
   const { isAuthenticated, user, logout } = useAuthStore();
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -15,27 +25,40 @@ const Header = () => {
   };
 
   return (
-    <div className="w3-top">
-      <div className="w3-bar w3-white w3-wide w3-padding w3-card">
-        <Link to="/" className="w3-bar-item w3-button"><b>Idea</b> Tracker</Link>
-        <div className="w3-right w3-hide-small">
+    <nav className={`nav ${isScrolled ? 'scrolled' : ''}`}>
+      <div className="nav-container">
+        <Link to="/" className="nav-logo">
+          <b>Idea</b> Tracker
+        </Link>
+        <div className="nav-menu">
           {isAuthenticated ? (
             <>
-              <Link to="/dashboard" className="w3-bar-item w3-button">Dashboard</Link>
-              <span className="w3-bar-item">Welcome, {user?.name || user?.email}</span>
-              <button onClick={handleLogout} className="w3-bar-item w3-button w3-hover-red">
+              <Link to="/dashboard" className="nav-item">
+                Dashboard
+              </Link>
+              <span className="nav-item text-secondary">
+                Welcome, {user?.name || user?.email}
+              </span>
+              <button 
+                onClick={handleLogout} 
+                className="btn btn-primary"
+              >
                 Logout
               </button>
             </>
           ) : (
             <>
-              <Link to="/login" className="w3-bar-item w3-button">Login</Link>
-              <Link to="/register" className="w3-bar-item w3-button">Register</Link>
+              <Link to="/login" className="nav-item">
+                Login
+              </Link>
+              <Link to="/register" className="btn btn-primary">
+                Get Started
+              </Link>
             </>
           )}
         </div>
       </div>
-    </div>
+    </nav>
   );
 };
 

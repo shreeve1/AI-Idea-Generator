@@ -18,7 +18,7 @@ const useIdeasStore = create((set, get) => ({
             
             // Add generated ideas to the store
             const currentIdeas = get().ideas;
-            const newIdeas = response.ideas || [];
+            const newIdeas = response.data?.ideas || response.ideas || [];
             
             set({
                 ideas: [...currentIdeas, ...newIdeas],
@@ -61,6 +61,25 @@ const useIdeasStore = create((set, get) => ({
 
     clearIdeas: () => {
         set({ ideas: [] });
+    },
+
+    loadCategories: async () => {
+        set({ isLoading: true, error: null });
+        try {
+            const categories = await apiService.getCategories();
+            set({
+                categories,
+                isLoading: false,
+                error: null,
+            });
+            return categories;
+        } catch (error) {
+            set({
+                isLoading: false,
+                error: error.message,
+            });
+            throw error;
+        }
     },
 
     setCategories: (categories) => {
