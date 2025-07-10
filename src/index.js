@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const { supabase } = require('./config/supabase');
 const database = require('./services/database');
 
@@ -14,6 +15,9 @@ const PORT = process.env.PORT || 3001;
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Serve static files from the React app build directory
+app.use(express.static(path.join(__dirname, '../client/dist')));
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -104,6 +108,11 @@ app.get('/api/debug/supabase', async (req, res) => {
             stack: error.stack
         });
     }
+});
+
+// Catch-all handler: send back React's index.html file for client-side routing
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/dist/index.html'));
 });
 
 app.listen(PORT, '0.0.0.0', () => {
