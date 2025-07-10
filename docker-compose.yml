@@ -1,10 +1,7 @@
 services:
   # Main application service
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: production
+    image: shreeve1/ai-idea-generator:latest
     container_name: ai-idea-generator-app
     ports:
       - "3001:3001"
@@ -37,41 +34,41 @@ services:
     networks:
       - app-network
 
-  # Development service (optional - for development with hot reload)
-  app-dev:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: backend-builder
-    container_name: ai-idea-generator-dev
-    ports:
-      - "3001:3001"
-      - "5173:5173"
-    environment:
-      - NODE_ENV=development
-      - PORT=3001
-      - SUPABASE_URL=${SUPABASE_URL}
-      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
-      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
-      - JWT_SECRET=${JWT_SECRET}
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      #- SMTP_HOST=${SMTP_HOST}
-      #- SMTP_PORT=${SMTP_PORT}
-      #- SMTP_USER=${SMTP_USER}
-      #- SMTP_PASS=${SMTP_PASS}
-      #- FROM_EMAIL=${FROM_EMAIL}
-    env_file:
-      - .env
-    volumes:
-      - ./src:/app/src
-      - ./client/src:/app/client/src
-      - /app/node_modules
-      - /app/client/node_modules
-    command: npm run dev
-    profiles:
-      - dev
-    networks:
-      - app-network
+  # # Development service (optional - for development with hot reload)
+  # app-dev:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #     target: backend-builder
+  #   container_name: ai-idea-generator-dev
+  #   ports:
+  #     - "3001:3001"
+  #     - "5173:5173"
+  #   environment:
+  #     - NODE_ENV=development
+  #     - PORT=3001
+  #     - SUPABASE_URL=${SUPABASE_URL}
+  #     - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+  #     - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+  #     - JWT_SECRET=${JWT_SECRET}
+  #     - OPENAI_API_KEY=${OPENAI_API_KEY}
+  #     #- SMTP_HOST=${SMTP_HOST}
+  #     #- SMTP_PORT=${SMTP_PORT}
+  #     #- SMTP_USER=${SMTP_USER}
+  #     #- SMTP_PASS=${SMTP_PASS}
+  #     #- FROM_EMAIL=${FROM_EMAIL}
+  #   env_file:
+  #     - .env
+  #   volumes:
+  #     - ./src:/app/src
+  #     - ./client/src:/app/client/src
+  #     - /app/node_modules
+  #     - /app/client/node_modules
+  #   command: npm run dev
+  #   profiles:
+  #     - dev
+  #   networks:
+  #     - app-network
 
 networks:
   app-network:
