@@ -28,7 +28,7 @@ This guide explains how to deploy the AI Idea Generator application using Docker
    ```
 
 4. **Access the application**
-   - Open your browser and go to `http://localhost:3001`
+   - Open your browser and go to `http://localhost:3025`
    - The application serves both the API and the React frontend
 
 ## Environment Configuration
@@ -90,10 +90,10 @@ docker-compose run --service-ports app-dev
 docker build -t ai-idea-generator .
 
 # Run the container
-docker run -p 3001:3001 --env-file .env ai-idea-generator
+docker run -p 3025:3025 --env-file .env ai-idea-generator
 
 # Run with custom port
-docker run -p 8080:3001 --env-file .env ai-idea-generator
+docker run -p 8080:3025 --env-file .env ai-idea-generator
 ```
 
 ## Architecture
@@ -114,7 +114,7 @@ The Docker setup uses a multi-stage build process:
 
 ## Networking
 
-- **Port 3001**: Main application port (API + Frontend)
+- **Port 3025**: Main application port (API + Frontend)
 - **Internal networking**: Services communicate through Docker's internal network
 
 ## Volumes and Data
@@ -129,7 +129,7 @@ The application is stateless and doesn't require persistent volumes. All data is
    ```bash
    # Change the port mapping in docker-compose.yml
    ports:
-     - "8080:3001"  # Use port 8080 instead of 3001
+     - "8080:3025"  # Use port 8080 instead of 3025
    ```
 
 2. **Environment variables not loaded**
@@ -147,7 +147,7 @@ The application is stateless and doesn't require persistent volumes. All data is
    docker-compose exec app node -e "console.log(process.env.SUPABASE_URL)"
    
    # Test database connection
-   curl http://localhost:3001/api/db-test
+   curl http://localhost:3025/api/db-test
    ```
 
 4. **Build failures**
@@ -172,7 +172,7 @@ docker-compose exec app sh
 docker-compose exec app printenv
 
 # Test health endpoint
-curl http://localhost:3001/api/health
+curl http://localhost:3025/api/health
 ```
 
 ### Performance Optimization

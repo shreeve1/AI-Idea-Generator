@@ -10,7 +10,7 @@ const authRoutes = require('./api/authRoutes');
 const aiRoutes = require('./api/aiRoutes');
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3025;
 
 // Middleware
 app.use(cors());

@@ -5,11 +5,11 @@ const getApiBaseUrl = () => {
   
   // If accessing via IP address or custom host, use that host for API
   if (currentHost !== 'localhost' && currentHost !== '127.0.0.1') {
-    return `http://${currentHost}:3001/api`;
+    return `http://${currentHost}:3025/api`;
   }
   
   // Default to localhost for local development
-  return import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+  return import.meta.env.VITE_API_URL || 'http://localhost:3025/api';
 };
 
 const API_BASE_URL = getApiBaseUrl();

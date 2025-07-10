@@ -54,7 +54,7 @@ A sophisticated AI-powered idea generator built with modern architecture portfol
    ```
 
 3. **Access the application**
-   - Open your browser to `http://localhost:3001`
+   - Open your browser to `http://localhost:3025`
 
 For detailed Docker instructions, see `DOCKER_README.md`.
 
@@ -87,7 +87,7 @@ For detailed Docker instructions, see `DOCKER_README.md`.
 
 5. **Start development servers**
    ```bash
-   # Start backend (runs on port 3001)
+   # Start backend (runs on port 3025)
    npm run dev
    
    # Start frontend (runs on port 5173)
@@ -106,7 +106,7 @@ For detailed Docker instructions, see `DOCKER_README.md`.
 | `JWT_SECRET` | Secret key for JWT tokens | Yes |
 | `OPENAI_API_KEY` | OpenAI API key for idea generation | Yes |
 | `NODE_ENV` | Environment (development/production) | No |
-| `PORT` | Server port (default: 3001) | No |
+| `PORT` | Server port (default: 3025) | No |
 
 ### Database Setup
 
